@@ -1,0 +1,57 @@
+_schema-version: "3.2"
+ID: TravelApp
+version: 0.0.1
+modules:
+- name: TravelApp-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: TravelApp-destination-service
+    parameters:
+      content-target: true
+  - name: TravelApp_html_repo_host
+    parameters:
+      service-key:
+        name: TravelApp_html_repo_host-key
+  - name: uaa_TravelApp
+    parameters:
+      service-key:
+        name: uaa_TravelApp-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: BP_TravelApp_html_repo_host
+          ServiceInstanceName: TravelApp-html5-app-host-service
+          ServiceKeyName: TravelApp_html_repo_host-key
+          sap.cloud.service: BP
+        - Authentication: OAuth2UserTokenExchange
+          Name: BP_uaa_TravelApp
+          ServiceInstanceName: TravelApp-xsuaa-service
+          ServiceKeyName: uaa_TravelApp-key
+          sap.cloud.service: BP
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+resources:
+- name: TravelApp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      version: 1.0.0
+    service: destination
+    service-name: TravelApp-destination-service
+    service-plan: lite
+- name: TravelApp_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: TravelApp-html5-app-host-service
+    service-plan: app-host
+- name: uaa_TravelApp
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: TravelApp-xsuaa-service
+    service-plan: application
